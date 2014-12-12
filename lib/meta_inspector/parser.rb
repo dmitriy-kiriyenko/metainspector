@@ -24,7 +24,7 @@ module MetaInspector
     delegate [:meta_tags, :meta_tag, :meta, :charset] => :@meta_tag_parser
     delegate [:links, :feed, :base_url]               => :@links_parser
     delegate :images                                  => :@images_parser
-    delegate [:title, :description]                   => :@texts_parser
+    delegate [:title, :meta_title, :description]      => :@texts_parser
 
     # Returns the whole parsed document
     def parsed

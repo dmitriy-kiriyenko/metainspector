@@ -5,8 +5,14 @@ module MetaInspector
 
       # Returns the parsed document title, from the content of the <title> tag
       # within the <head> section.
+      def meta_title
+        parsed.css('head title').inner_text
+      rescue
+        nil
+      end
+
       def title
-        @title ||= parsed.css('head title').inner_text rescue nil
+        @title ||= microdata_title || meta['og:title'] || meta['twitter:title'] || meta_title
       end
 
       # A description getter that first checks for a meta description
@@ -17,6 +23,13 @@ module MetaInspector
       end
 
       private
+
+      def microdata_title
+        query = '//*[@itemscope]/*[@itemprop="title"]'
+        parsed.xpath(query)[0].inner_text
+      rescue
+        nil
+      end
 
       # Look for the first <p> block with 120 characters or more
       def secondary_description

@@ -29,7 +29,7 @@ module MetaInspector
 
       private
 
-      def microdata
+      def microdata_image
         query = '//*[@itemscope]/*[@itemprop="image"]'
         parsed.xpath(query)[0].inner_text
       rescue
