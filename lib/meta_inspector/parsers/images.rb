@@ -15,7 +15,7 @@ module MetaInspector
       # See doc at http://developers.facebook.com/docs/opengraph/
       # If none found, tries with Twitter image
       def best
-        microdata || meta['og:image'] || meta['twitter:image'] || images_collection.first
+        microdata_image || meta['og:image'] || meta['twitter:image'] || images_collection.first
       end
 
       # Return favicon url if exist
