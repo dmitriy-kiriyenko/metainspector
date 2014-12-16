@@ -1,3 +1,5 @@
+require 'fastimage'
+
 module MetaInspector
   module Parsers
     class ImagesParser < Base
@@ -15,7 +17,7 @@ module MetaInspector
       # See doc at http://developers.facebook.com/docs/opengraph/
       # If none found, tries with Twitter image
       def best
-        microdata_image || meta['og:image'] || meta['twitter:image'] || images_collection.first
+        microdata_image || meta['og:image'] || meta['twitter:image'] || detect_best_image
       end
 
       # Return favicon url if exist
@@ -28,6 +30,22 @@ module MetaInspector
       end
 
       private
+
+      def detect_best_image
+        meaningful_images.first
+      end
+
+      def meaningful_images
+        images_collection.reject { |name|
+          name =~ blacklist
+        }.map { |name|
+          [name, FastImage.size(name)]
+        }.reject { |(_, (h, w))|
+          h / w > 3 || w / h > 3
+        }.sort_by { |(_, (h, w))|
+          -h * w
+        }.map(&:first)
+      end
 
       def microdata_image
         query = '//*[@itemscope]/*[@itemprop="image"]'
@@ -46,6 +64,10 @@ module MetaInspector
 
       def parsed_images
         cleanup(parsed.search('//img/@src'))
+      end
+
+      def blacklist
+        Regexp.union 'banner', 'background', 'empty', 'sprite', 'base64', '.tiff'
       end
     end
   end
