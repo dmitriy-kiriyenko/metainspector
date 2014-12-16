@@ -36,12 +36,12 @@ module MetaInspector
       end
 
       def meaningful_images
-        images_collection.reject { |name|
+        @meaningful_images ||= images_collection.reject { |name|
           name =~ blacklist
         }.map { |name|
           [name, FastImage.size(name)]
         }.reject { |(_, (h, w))|
-          h / w > 3 || w / h > 3
+          h / w > 3 || w / h > 3 || h * w < 5000
         }.sort_by { |(_, (h, w))|
           -h * w
         }.map(&:first)
